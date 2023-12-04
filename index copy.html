@@ -165,6 +165,7 @@
       updateUINotesContainer();
 
 function updateUINotesContainer() {
+  notesContainer.innerHTML=``
   notes.forEach(function(noteItem) {
     let noteHTML = generatNoteHTML(noteItem);
     notesContainer.innerHTML += noteHTML;
@@ -226,9 +227,48 @@ function generatNoteHTML(noteItem) {
             <img src="${noteItem.profile}" alt="" />
         </div>
         <p>${noteItem.content}</p>
-        <p class="absolute top-4 right-4 rounded-full h-8 w-8 p-3 bg-white flex justify-center items-center cursor-pointer" onclick="removeNote()"><span>X</span></p>
+        <div class="note-actions">
+          <button class="edit-button" onclick="editNote('${noteItem.id}')">Edit</button>
+          <button class="delete-button" onclick="removeNote('${noteItem.id}')">Delete</button>
+        </div>
     </div>
   `;
+}
+
+function editNote(noteId) {
+  // Find the note in the notes array based on the noteId
+  const note = notes.find((note) => note.id === noteId);
+
+  if (note) {
+    // Get the note container element
+    const noteContainer = document.querySelector(`[data-note-id="${noteId}"]`);
+
+    // Get the note content element
+    const noteContent = noteContainer.querySelector("p");
+
+    // Create an input element for editing the note content
+    const inputElement = document.createElement("input");
+    inputElement.type = "text";
+    inputElement.value = note.content;
+
+    // Replace the note content with the input element
+    noteContent.replaceWith(inputElement);
+
+    // Create a save button
+    const saveButton = document.createElement("button");
+    // saveButton.textContent = "Save";
+    saveButton.addEventListener("click", function () {
+      // Update the note content with the input value
+      note.content = inputElement.value;
+
+      // Replace the input element with the updated note content
+      inputElement.replaceWith(noteContent);
+      noteContent.textContent = note.content;
+    });
+
+    // Append the save button to the note container
+    noteContainer.querySelector(".note-actions").appendChild(saveButton);
+  }
 }
 
 
